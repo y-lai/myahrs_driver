@@ -60,6 +60,7 @@ private:
   bool publish_tf;
   std::string parent_frame_id_;
   std::string frame_id_;
+  std::string topic_prefix_;
   double linear_acceleration_stddev_;
   double angular_velocity_stddev_;
   double magnetic_field_stddev_;
@@ -85,21 +86,36 @@ public:
     // dependent on user device
     nh_priv_.setParam("port", port);
     nh_priv_.setParam("baud_rate", baud_rate);
-    nh_priv_.param("publish_tf", publish_tf, false);
-    // default frame id
-    nh_priv_.param("frame_id", frame_id_, std::string("imu_link"));
-    // for testing the tf
-    nh_priv_.param("parent_frame_id_", parent_frame_id_, std::string("base_link"));
+    
+    if(!nh_priv_.getParam("publish_tf",publish_tf))
+    {
+      nh_priv_.param("publish_tf", publish_tf, false);
+    }
+    if(!nh_priv_.getParam("frame_id", frame_id_))
+    {
+      // default frame id
+      nh_priv_.param("frame_id", frame_id_, std::string("imu_link"));
+    }
+    if(!nh_priv_.getParam("parent_frame_id", parent_frame_id_))
+    {
+      // for testing the tf
+      nh_priv_.param("parent_frame_id", parent_frame_id_, std::string("base_link"));
+    }
     // defaults obtained experimentally from device
     nh_priv_.param("linear_acceleration_stddev", linear_acceleration_stddev_, 0.026831);
     nh_priv_.param("angular_velocity_stddev", angular_velocity_stddev_, 0.002428);
     nh_priv_.param("magnetic_field_stddev", magnetic_field_stddev_, 0.00000327486);
     nh_priv_.param("orientation_stddev", orientation_stddev_, 0.002143);
+    if(!nh_priv_.getParam("topic_prefix",topic_prefix_))
+    {
+      // default prefix
+      nh_priv_.param("topic_prefix", topic_prefix_, std::string("imu"));
+    }
     // publisher for streaming
-    imu_data_raw_pub_   = nh_.advertise<sensor_msgs::Imu>("imu/data_raw", 1);
-    imu_data_pub_       = nh_.advertise<sensor_msgs::Imu>("imu/data", 1);
-    imu_mag_pub_        = nh_.advertise<sensor_msgs::MagneticField>("imu/mag", 1);
-    imu_temperature_pub_= nh_.advertise<std_msgs::Float64>("imu/temperature", 1);
+    imu_data_raw_pub_   = nh_.advertise<sensor_msgs::Imu>(topic_prefix_+"/data_raw", 1);
+    imu_data_pub_       = nh_.advertise<sensor_msgs::Imu>(topic_prefix_+"/data", 1);
+    imu_mag_pub_        = nh_.advertise<sensor_msgs::MagneticField>(topic_prefix_+"/mag", 1);
+    imu_temperature_pub_= nh_.advertise<std_msgs::Float64>(topic_prefix_+"/temperature", 1);
   }
 
   ~MyAhrsDriverForROS()
