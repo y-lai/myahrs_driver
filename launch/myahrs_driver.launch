@@ -12,5 +12,5 @@
     <param name="parent_frame_id" value="$(arg parent_frame_id)" />
     <param name="topic_prefix" value="$(arg topic_prefix)" />
   </node>
-  <node pkg="rviz" type="rviz" name="rviz" args="-d $(find myahrs_driver)/rviz_cfg/imu_test.rviz" />
+  <!-- <node pkg="rviz" type="rviz" name="rviz" args="-d $(find myahrs_driver)/rviz_cfg/imu_test.rviz" /> -->
 </launch>
